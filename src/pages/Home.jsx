@@ -1,0 +1,91 @@
+import { Link } from 'react-router-dom'
+import { useCampaigns } from '../context/CampaignContext'
+import { useAuth } from '../context/AuthContext'
+import { Target, Users, Calendar } from 'lucide-react'
+
+const Home = () => {
+  const { campaigns } = useCampaigns()
+  const { user } = useAuth()
+
+  const formatCurrency = (amount) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(amount)
+  }
+
+  const getProgressPercentage = (raised, goal) => {
+    return Math.min((raised / goal) * 100, 100)
+  }
+
+  return (
+    <div className="home">
+      <section className="hero">
+        <div className="hero-content">
+          <h1>Empower Dreams, Fund the Future</h1>
+          <p>Connect with entrepreneurs and changemakers. Support causes that matter.</p>
+          {!user && (
+            <div className="hero-actions">
+              <Link to="/register" className="btn btn-primary">Get Started</Link>
+              <Link to="/login" className="btn btn-secondary">Sign In</Link>
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="campaigns-section">
+        <h2>Featured Campaigns</h2>
+        {campaigns.length === 0 ? (
+          <div className="no-campaigns">
+            <p>No campaigns yet. Be the first to create one!</p>
+            {user && (
+              <Link to="/create-campaign" className="btn btn-primary">Create Campaign</Link>
+            )}
+          </div>
+        ) : (
+          <div className="campaigns-grid">
+            {campaigns.map(campaign => (
+              <div key={campaign.id} className="campaign-card">
+                <div className="campaign-header">
+                  <h3>{campaign.title}</h3>
+                  <span className="campaign-category">{campaign.category}</span>
+                </div>
+                <p className="campaign-description">{campaign.description}</p>
+                
+                <div className="campaign-progress">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ width: `${getProgressPercentage(campaign.raised, campaign.goal)}%` }}
+                    ></div>
+                  </div>
+                  <div className="progress-stats">
+                    <span className="raised">{formatCurrency(campaign.raised)}</span>
+                    <span className="goal">of {formatCurrency(campaign.goal)}</span>
+                  </div>
+                </div>
+
+                <div className="campaign-meta">
+                  <div className="meta-item">
+                    <Users size={16} />
+                    <span>{campaign.donors.length} donors</span>
+                  </div>
+                  <div className="meta-item">
+                    <Calendar size={16} />
+                    <span>{new Date(campaign.createdAt).toLocaleDateString()}</span>
+                  </div>
+                </div>
+
+                <Link to={`/campaign/${campaign.id}`} className="btn btn-primary">
+                  View Campaign
+                </Link>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  )
+}
+
+export default Home
