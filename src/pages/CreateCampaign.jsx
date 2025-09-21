@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCampaigns } from '../context/CampaignContext'
 
@@ -67,8 +67,12 @@ const CreateCampaign = () => {
   if (!user) {
     return (
       <div className="auth-required">
-        <h2>Authentication Required</h2>
-        <p>Please log in to create a campaign.</p>
+        <h2>Ready to Start Fundraising?</h2>
+        <p>Create an account to launch your campaign and start raising funds for your cause.</p>
+        <div className="auth-actions">
+          <Link to="/register" className="btn btn-primary">Create Account</Link>
+          <Link to="/login" className="btn btn-secondary">Already have an account? Sign In</Link>
+        </div>
       </div>
     )
   }

@@ -10,8 +10,12 @@ const Dashboard = () => {
   if (!user) {
     return (
       <div className="auth-required">
-        <h2>Authentication Required</h2>
-        <p>Please log in to view your dashboard.</p>
+        <h2>Your Fundraising Dashboard</h2>
+        <p>Track your campaigns, monitor donations, and manage your fundraising efforts all in one place.</p>
+        <div className="auth-actions">
+          <Link to="/register" className="btn btn-primary">Create Account</Link>
+          <Link to="/login" className="btn btn-secondary">Sign In</Link>
+        </div>
       </div>
     )
   }

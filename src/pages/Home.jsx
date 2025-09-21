@@ -24,12 +24,16 @@ const Home = () => {
         <div className="hero-content">
           <h1>Empower Dreams, Fund the Future</h1>
           <p>Connect with entrepreneurs and changemakers. Support causes that matter.</p>
-          {!user && (
-            <div className="hero-actions">
-              <Link to="/register" className="btn btn-primary">Get Started</Link>
-              <Link to="/login" className="btn btn-secondary">Sign In</Link>
-            </div>
-          )}
+          <div className="hero-actions">
+            {!user ? (
+              <>
+                <Link to="/register" className="btn btn-primary">Get Started</Link>
+                <Link to="/login" className="btn btn-secondary">Sign In</Link>
+              </>
+            ) : (
+              <Link to="/create-campaign" className="btn btn-primary">Create Campaign</Link>
+            )}
+          </div>
         </div>
       </section>
 
@@ -37,10 +41,10 @@ const Home = () => {
         <h2>Featured Campaigns</h2>
         {campaigns.length === 0 ? (
           <div className="no-campaigns">
-            <p>No campaigns yet. Be the first to create one!</p>
-            {user && (
-              <Link to="/create-campaign" className="btn btn-primary">Create Campaign</Link>
-            )}
+            <p>No campaigns yet. {user ? 'Be the first to create one!' : 'Sign up to create the first campaign!'}</p>
+            <Link to={user ? "/create-campaign" : "/register"} className="btn btn-primary">
+              {user ? 'Create Campaign' : 'Get Started'}
+            </Link>
           </div>
         ) : (
           <div className="campaigns-grid">

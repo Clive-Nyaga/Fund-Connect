@@ -34,6 +34,7 @@ const CampaignDetail = () => {
     
     if (!user) {
       setMessage('Please log in to make a donation')
+      setShowDonationForm(false)
       return
     }
 
@@ -132,10 +133,16 @@ const CampaignDetail = () => {
 
             {!showDonationForm ? (
               <button 
-                onClick={() => setShowDonationForm(true)}
+                onClick={() => {
+                  if (!user) {
+                    setMessage('Please log in to make a donation')
+                    return
+                  }
+                  setShowDonationForm(true)
+                }}
                 className="btn btn-primary btn-full"
               >
-                Donate Now
+                {user ? 'Donate Now' : 'Login to Donate'}
               </button>
             ) : (
               <form onSubmit={handleDonate} className="donation-form">

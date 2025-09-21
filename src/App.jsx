@@ -3,6 +3,8 @@ import { AuthProvider } from './context/AuthContext'
 import { CampaignProvider } from './context/CampaignContext'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
+import About from './pages/About'
+import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import CreateCampaign from './pages/CreateCampaign'
@@ -20,6 +22,8 @@ function App() {
             <main className="main-content">
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/create-campaign" element={<CreateCampaign />} />
