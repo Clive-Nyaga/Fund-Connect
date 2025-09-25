@@ -1,25 +1,38 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCampaigns } from '../context/CampaignContext'
 import { Plus, Target, DollarSign, Users, Trash2, Calendar } from 'lucide-react'
+import ConfirmModal from '../components/ConfirmModal'
 
 const Dashboard = () => {
   const { user } = useAuth()
   const { campaigns, getUserCampaigns, deleteCampaign } = useCampaigns()
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [campaignToDelete, setCampaignToDelete] = useState(null)
   
-  const handleDeleteCampaign = async (campaignId, campaignRaised) => {
-    if (campaignRaised > 0) {
+  const handleDeleteClick = (campaign) => {
+    if (campaign.raised > 0) {
       alert('Cannot delete campaigns that have received contributions')
       return
     }
-    
-    if (window.confirm('Are you sure you want to delete this campaign?')) {
-      try {
-        await deleteCampaign(campaignId)
-      } catch (err) {
-        alert('Failed to delete campaign')
-      }
+    setCampaignToDelete(campaign)
+    setShowDeleteModal(true)
+  }
+  
+  const handleConfirmDelete = async () => {
+    try {
+      await deleteCampaign(campaignToDelete.id)
+      setShowDeleteModal(false)
+      setCampaignToDelete(null)
+    } catch (err) {
+      alert('Failed to delete campaign')
     }
+  }
+  
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false)
+    setCampaignToDelete(null)
   }
 
   if (!user) {
@@ -147,7 +160,7 @@ const Dashboard = () => {
                     </div>
                     {campaign.raised === 0 && (
                       <button 
-                        onClick={() => handleDeleteCampaign(campaign.id, campaign.raised)}
+                        onClick={() => handleDeleteClick(campaign)}
                         className="delete-btn"
                         title="Delete campaign"
                       >
@@ -229,6 +242,16 @@ const Dashboard = () => {
           </>
         )}
       </div>
+      
+      <ConfirmModal
+        isOpen={showDeleteModal}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        title="Delete Campaign"
+        message={`Are you sure you want to delete "${campaignToDelete?.title}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   )
 }
