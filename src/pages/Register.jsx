@@ -7,7 +7,8 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    designation: 'Individual'
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -26,7 +27,7 @@ const Register = () => {
     setError('')
     setLoading(true)
 
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.designation) {
       setError('Please fill in all fields')
       setLoading(false)
       return
@@ -48,7 +49,7 @@ const Register = () => {
       name: formData.name,
       email: formData.email,
       password: formData.password,
-      designation: 'user'
+      designation: formData.designation
     }
 
     try {
@@ -95,6 +96,20 @@ const Register = () => {
               placeholder="Enter your email"
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="designation">Account Type</label>
+            <select
+              id="designation"
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+              required
+            >
+              <option value="Individual">Individual</option>
+              <option value="Organization">Organization</option>
+            </select>
           </div>
 
           <div className="form-group">

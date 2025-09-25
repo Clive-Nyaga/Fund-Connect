@@ -20,11 +20,9 @@ const CreateCampaign = () => {
     'entrepreneurship',
     'education',
     'healthcare',
-    'community',
-    'environment',
-    'technology',
-    'arts',
-    'sports'
+    'charity',
+    'animals',
+    'wars'
   ]
 
   const handleChange = (e) => {
