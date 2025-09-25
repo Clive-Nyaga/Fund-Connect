@@ -20,7 +20,9 @@ const transformCampaignFromBackend = (backendCampaign) => {
     raised: backendCampaign.raisedamount || 0,
     title: backendCampaign.description,
     creatorId: backendCampaign.user_id,
-    creatorName: backendCampaign.user?.name || 'Unknown'
+    creatorName: backendCampaign.user?.name || 'Unknown',
+    supporters: backendCampaign.supporters || 0,
+    donors: backendCampaign.donations || []
   }
 }
 
@@ -111,10 +113,19 @@ export const CampaignProvider = ({ children }) => {
         description: `${donorInfo.name || 'An anonymous donor'} contributed ${formattedAmount} to ${campaign?.title || 'this campaign'}. Thank you for your support!`
       })
       
-      // Refresh campaigns to get updated raised amount
+      // Refresh campaigns to get updated data from backend
       const campaignsRes = await campaignAPI.getAll()
-      const backendCampaigns = campaignsRes.data.campaigns || []
+      console.log('Campaigns after donation:', campaignsRes)
+      
+      let backendCampaigns = []
+      if (campaignsRes.data.campaigns) {
+        backendCampaigns = campaignsRes.data.campaigns
+      } else if (Array.isArray(campaignsRes.data)) {
+        backendCampaigns = campaignsRes.data
+      }
+      
       const transformedCampaigns = backendCampaigns.map(transformCampaignFromBackend)
+      console.log('Transformed campaigns after donation:', transformedCampaigns)
       setCampaigns(transformedCampaigns)
       return donationRes.data
     } catch (err) {

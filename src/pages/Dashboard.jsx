@@ -50,7 +50,7 @@ const Dashboard = () => {
 
   const userCampaigns = user ? getUserCampaigns(user.id) : []
   const totalRaised = userCampaigns.reduce((sum, campaign) => sum + (campaign.raised || 0), 0)
-  const totalDonors = userCampaigns.reduce((sum, campaign) => sum + (campaign.donors?.length || 0), 0)
+  const totalDonors = userCampaigns.reduce((sum, campaign) => sum + (campaign.supporters || 0), 0)
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -128,7 +128,7 @@ const Dashboard = () => {
                 <div className="campaign-content">
                   <div className="campaign-header">
                     <h3>
-                      <Link to={`/campaign/${campaign.id}`}>
+                      <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }}>
                         {campaign.title}
                       </Link>
                     </h3>
@@ -152,7 +152,7 @@ const Dashboard = () => {
                   <div className="campaign-meta">
                     <div className="meta-item">
                       <Users size={16} />
-                      <span>{campaign.donors?.length || 0} donors</span>
+                      <span>{campaign.supporters || 0} supporters</span>
                     </div>
                     <div className="meta-item">
                       <Calendar size={16} />
@@ -170,10 +170,10 @@ const Dashboard = () => {
                   </div>
 
                   <div className="campaign-actions">
-                    <Link to={`/campaign/${campaign.id}`} className="btn btn-secondary">
+                    <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }} className="btn btn-secondary">
                       View Details
                     </Link>
-                    <Link to={`/campaign/${campaign.id}`} className="btn btn-primary">
+                    <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }} className="btn btn-primary">
                       Manage
                     </Link>
                   </div>
@@ -195,7 +195,7 @@ const Dashboard = () => {
                   <div className="campaign-content">
                     <div className="campaign-header">
                       <h3>
-                        <Link to={`/campaign/${campaign.id}`}>
+                        <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }}>
                           {campaign.title}
                         </Link>
                       </h3>
@@ -219,7 +219,7 @@ const Dashboard = () => {
                     <div className="campaign-meta">
                       <div className="meta-item">
                         <Users size={16} />
-                        <span>{campaign.donors?.length || 0} donors</span>
+                        <span>{campaign.supporters || 0} supporters</span>
                       </div>
                       <div className="meta-item">
                         <Calendar size={16} />
@@ -228,10 +228,10 @@ const Dashboard = () => {
                     </div>
 
                     <div className="campaign-actions">
-                      <Link to={`/campaign/${campaign.id}`} className="btn btn-secondary">
+                      <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }} className="btn btn-secondary">
                         View Details
                       </Link>
-                      <Link to={`/campaign/${campaign.id}`} className="btn btn-primary">
+                      <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }} className="btn btn-primary">
                         Contribute
                       </Link>
                     </div>

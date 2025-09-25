@@ -101,7 +101,7 @@ const Home = () => {
                   <div className="campaign-meta">
                     <div className="meta-item">
                       <Users size={16} />
-                      <span>{campaign.donors?.length || 0} donors</span>
+                      <span>{campaign.supporters || 0} supporters</span>
                     </div>
                     <div className="meta-item">
                       <Calendar size={16} />

@@ -1,16 +1,28 @@
-import { useState } from 'react'
-import { useParams, Navigate, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, Navigate, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useCampaigns } from '../context/CampaignContext'
 import { useAuth } from '../context/AuthContext'
 import { Target, Users, Calendar, DollarSign, ArrowLeft } from 'lucide-react'
 
 const CampaignDetail = () => {
   const { id } = useParams()
+  const location = useLocation()
+  const navigate = useNavigate()
   const { getCampaignById, donateToCampaign } = useCampaigns()
   const { user } = useAuth()
   const [donationAmount, setDonationAmount] = useState('')
   const [showDonationForm, setShowDonationForm] = useState(false)
   const [message, setMessage] = useState('')
+  const [backPath, setBackPath] = useState('/')
+  
+  useEffect(() => {
+    // Determine where to go back based on referrer or state
+    if (location.state?.from === 'dashboard') {
+      setBackPath('/dashboard')
+    } else if (document.referrer.includes('/dashboard')) {
+      setBackPath('/dashboard')
+    }
+  }, [location])
 
   const campaign = getCampaignById(id)
 
@@ -58,6 +70,13 @@ const CampaignDetail = () => {
       return
     }
 
+    // Check if donation would exceed target amount
+    const remainingAmount = campaign.goal - campaign.raised
+    if (amount > remainingAmount) {
+      setMessage(`Donation amount cannot exceed the remaining target of ${formatCurrency(remainingAmount)}`)
+      return
+    }
+
     try {
       const donorInfo = {
         id: user.id,
@@ -67,6 +86,12 @@ const CampaignDetail = () => {
 
       await donateToCampaign(campaign.id, amount, donorInfo)
       setMessage(`Thank you for your donation of ${formatCurrency(amount)}!`)
+      
+      // Redirect to dashboard after successful donation
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 2000)
+      
       setDonationAmount('')
       setShowDonationForm(false)
     } catch (error) {
@@ -78,9 +103,9 @@ const CampaignDetail = () => {
   return (
     <div className="campaign-detail">
       <div className="campaign-back">
-        <Link to="/" className="back-link">
+        <Link to={backPath} className="back-link">
           <ArrowLeft size={20} />
-          Back to Campaigns
+          {backPath === '/dashboard' ? 'Back to Dashboard' : 'Back to Campaigns'}
         </Link>
       </div>
       
@@ -138,7 +163,7 @@ const CampaignDetail = () => {
               </div>
               <div className="donors-count">
                 <Users size={20} />
-                <span>{campaign.donors?.length || 0} donors</span>
+                <span>{campaign.supporters || 0} supporters</span>
               </div>
             </div>
 
@@ -184,9 +209,13 @@ const CampaignDetail = () => {
                     onChange={(e) => setDonationAmount(e.target.value)}
                     placeholder="Enter amount"
                     min="1"
+                    max={campaign.goal - campaign.raised}
                     step="0.01"
                     required
                   />
+                  <small style={{ color: '#64748b', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+                    Maximum: {formatCurrency(campaign.goal - campaign.raised)}
+                  </small>
                 </div>
                 <div className="form-actions">
                   <button type="submit" className="btn btn-primary">
