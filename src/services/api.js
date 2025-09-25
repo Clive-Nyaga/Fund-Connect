@@ -68,6 +68,18 @@ export const donationAPI = {
   })
 }
 
+export const updatesAPI = {
+  create: (data) => apiRequest('/updates', {
+    method: 'POST',
+    body: JSON.stringify({
+      title: data.title,
+      description: data.description,
+      campaign_id: data.campaignId
+    })
+  }),
+  getByCampaign: (campaignId) => publicApiRequest(`/campaigns/${campaignId}/updates`)
+}
+
 export const authAPI = {
   login: (credentials) => apiRequest('/login', {
     method: 'POST',

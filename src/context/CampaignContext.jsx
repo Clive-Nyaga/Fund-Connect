@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import { campaignAPI, donationAPI } from '../services/api'
+import { campaignAPI, donationAPI, updatesAPI } from '../services/api'
 import { useAuth } from './AuthContext'
 
 const CampaignContext = createContext()
@@ -90,18 +90,33 @@ export const CampaignProvider = ({ children }) => {
   // Donate to a campaign
   const donateToCampaign = async (campaignId, amount, donorInfo) => {
     try {
-      const res = await donationAPI.create({
+      // Create the donation
+      const donationRes = await donationAPI.create({
         campaignId,
         amount,
         title: donorInfo.name || 'Anonymous Donation',
         paymentmethod: donorInfo.paymentmethod || 'card'
       })
+      
+      // Create an update entry for the donation
+      const campaign = getCampaignById(campaignId)
+      const formattedAmount = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(amount)
+      
+      await updatesAPI.create({
+        campaignId,
+        title: `New Donation Received`,
+        description: `${donorInfo.name || 'An anonymous donor'} contributed ${formattedAmount} to ${campaign?.title || 'this campaign'}. Thank you for your support!`
+      })
+      
       // Refresh campaigns to get updated raised amount
       const campaignsRes = await campaignAPI.getAll()
       const backendCampaigns = campaignsRes.data.campaigns || []
       const transformedCampaigns = backendCampaigns.map(transformCampaignFromBackend)
       setCampaigns(transformedCampaigns)
-      return res.data
+      return donationRes.data
     } catch (err) {
       console.error("Error donating:", err)
       throw err

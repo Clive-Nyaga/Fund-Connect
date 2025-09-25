@@ -24,6 +24,20 @@ const Home = () => {
     return Math.min((raised / goal) * 100, 100)
   }
 
+  const getCategoryImage = (category) => {
+    const images = {
+      entrepreneurship: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=250&fit=crop',
+      education: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=250&fit=crop',
+      healthcare: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop',
+      charity: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=250&fit=crop',
+      animals: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=250&fit=crop',
+      wars: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=250&fit=crop',
+      /* arts: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=250&fit=crop',
+      sports: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop' */
+    }
+    return images[category] || images.community
+  }
+
   return (
     <div className="home">
       <section className="hero">
@@ -61,10 +75,14 @@ const Home = () => {
             <div className="campaigns-grid">
               {displayedCampaigns.map(campaign => (
                 <div key={campaign.id} className="campaign-card">
-                  <div className="campaign-header">
-                    <h3>{campaign.title}</h3>
-                    <span className="campaign-category">{campaign.category}</span>
+                  <div className="campaign-image">
+                    <img src={getCategoryImage(campaign.category)} alt={campaign.category} />
                   </div>
+                  <div className="campaign-content">
+                    <div className="campaign-header">
+                      <h3>{campaign.title}</h3>
+                      <span className="campaign-category">{campaign.category}</span>
+                    </div>
                   <p className="campaign-description">{campaign.description}</p>
                   
                   <div className="campaign-progress">
@@ -91,13 +109,14 @@ const Home = () => {
                     </div>
                   </div>
 
-                  <div className="campaign-actions">
-                    <Link to={`/campaign/${campaign.id}`} className="btn btn-secondary">
-                      View Details
-                    </Link>
-                    <Link to={`/campaign/${campaign.id}`} className="btn btn-primary">
-                      Contribute
-                    </Link>
+                    <div className="campaign-actions">
+                      <Link to={`/campaign/${campaign.id}`} className="btn btn-secondary">
+                        View Details
+                      </Link>
+                      <Link to={`/campaign/${campaign.id}`} className="btn btn-primary">
+                        Contribute
+                      </Link>
+                    </div>
                   </div>
                 </div>
               ))}

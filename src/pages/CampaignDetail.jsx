@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { useParams, Navigate } from 'react-router-dom'
+import { useParams, Navigate, Link } from 'react-router-dom'
 import { useCampaigns } from '../context/CampaignContext'
 import { useAuth } from '../context/AuthContext'
-import { Target, Users, Calendar, DollarSign } from 'lucide-react'
+import { Target, Users, Calendar, DollarSign, ArrowLeft } from 'lucide-react'
 
 const CampaignDetail = () => {
   const { id } = useParams()
@@ -29,7 +29,21 @@ const CampaignDetail = () => {
     return Math.min((campaign.raised / campaign.goal) * 100, 100)
   }
 
-  const handleDonate = (e) => {
+  const getCategoryImage = (category) => {
+    const images = {
+      entrepreneurship: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=400&fit=crop',
+      education: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=800&h=400&fit=crop',
+      healthcare: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=400&fit=crop',
+      community: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800&h=400&fit=crop',
+      environment: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&h=400&fit=crop',
+      technology: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=400&fit=crop',
+      arts: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&h=400&fit=crop',
+      sports: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=400&fit=crop'
+    }
+    return images[category] || images.community
+  }
+
+  const handleDonate = async (e) => {
     e.preventDefault()
     
     if (!user) {
@@ -44,29 +58,44 @@ const CampaignDetail = () => {
       return
     }
 
-    const donorInfo = {
-      id: user.id,
-      name: user.name,
-      email: user.email
-    }
+    try {
+      const donorInfo = {
+        id: user.id,
+        name: user.name,
+        email: user.email
+      }
 
-    donateToCampaign(campaign.id, amount, donorInfo)
-    setMessage(`Thank you for your donation of ${formatCurrency(amount)}!`)
-    setDonationAmount('')
-    setShowDonationForm(false)
+      await donateToCampaign(campaign.id, amount, donorInfo)
+      setMessage(`Thank you for your donation of ${formatCurrency(amount)}!`)
+      setDonationAmount('')
+      setShowDonationForm(false)
+    } catch (error) {
+      console.error('Donation error:', error)
+      setMessage('Failed to process donation. Please try again.')
+    }
   }
 
   return (
     <div className="campaign-detail">
-      <div className="campaign-header">
-        <h1>{campaign.title}</h1>
-        <div className="campaign-meta">
+      <div className="campaign-back">
+        <Link to="/" className="back-link">
+          <ArrowLeft size={20} />
+          Back to Campaigns
+        </Link>
+      </div>
+      
+      <div className="campaign-hero">
+        <img src={getCategoryImage(campaign.category)} alt={campaign.category} className="campaign-hero-image" />
+        <div className="campaign-hero-overlay">
           <span className="category">{campaign.category}</span>
-          <span className="creator">by {campaign.creatorName}</span>
-          <span className="date">
-            <Calendar size={16} />
-            {new Date(campaign.createdAt).toLocaleDateString()}
-          </span>
+          <h1>{campaign.title}</h1>
+          <div className="campaign-meta">
+            <span className="creator">by {campaign.creatorName}</span>
+            <span className="date">
+              <Calendar size={16} />
+              {new Date(campaign.createdAt || Date.now()).toLocaleDateString()}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -77,7 +106,7 @@ const CampaignDetail = () => {
             <p>{campaign.description}</p>
           </div>
 
-          {campaign.donors.length > 0 && (
+          {campaign.donors && campaign.donors.length > 0 && (
             <div className="donors-section">
               <h3>Recent Donors</h3>
               <div className="donors-list">
@@ -109,7 +138,7 @@ const CampaignDetail = () => {
               </div>
               <div className="donors-count">
                 <Users size={20} />
-                <span>{campaign.donors.length} donors</span>
+                <span>{campaign.donors?.length || 0} donors</span>
               </div>
             </div>
 

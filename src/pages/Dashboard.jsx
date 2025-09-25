@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCampaigns } from '../context/CampaignContext'
-import { Plus, Target, DollarSign, Users, Trash2 } from 'lucide-react'
+import { Plus, Target, DollarSign, Users, Trash2, Calendar } from 'lucide-react'
 
 const Dashboard = () => {
   const { user } = useAuth()
@@ -50,6 +50,18 @@ const Dashboard = () => {
     return Math.min((raised / goal) * 100, 100)
   }
 
+  const getCategoryImage = (category) => {
+    const images = {
+      entrepreneurship: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=250&fit=crop',
+      education: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=250&fit=crop',
+      healthcare: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop',
+      charity: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=400&h=250&fit=crop',
+      animals: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=250&fit=crop',
+      wars: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=250&fit=crop'
+    }
+    return images[category] || images.charity
+  }
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
@@ -94,36 +106,45 @@ const Dashboard = () => {
             </Link>
           </div>
         ) : (
-          <div className="campaigns-list">
+          <div className="campaigns-grid">
             {userCampaigns.map(campaign => (
-              <div key={campaign.id} className="campaign-item">
-                <div className="campaign-info">
-                  <h3>
-                    <Link to={`/campaign/${campaign.id}`}>
-                      {campaign.title}
-                    </Link>
-                  </h3>
-                  <p className="campaign-category">{campaign.category}</p>
-                  <p className="campaign-description">{campaign.description}</p>
+              <div key={campaign.id} className="campaign-card">
+                <div className="campaign-image">
+                  <img src={getCategoryImage(campaign.category)} alt={campaign.category} />
                 </div>
-                
-                <div className="campaign-stats">
-                  <div className="progress-section">
+                <div className="campaign-content">
+                  <div className="campaign-header">
+                    <h3>
+                      <Link to={`/campaign/${campaign.id}`}>
+                        {campaign.title}
+                      </Link>
+                    </h3>
+                    <span className="campaign-category">{campaign.category}</span>
+                  </div>
+                  <p className="campaign-description">{campaign.description}</p>
+                  
+                  <div className="campaign-progress">
                     <div className="progress-bar">
                       <div 
                         className="progress-fill" 
                         style={{ width: `${getProgressPercentage(campaign.raised, campaign.goal)}%` }}
                       ></div>
                     </div>
-                    <div className="progress-text">
-                      {formatCurrency(campaign.raised)} of {formatCurrency(campaign.goal)}
-                      ({getProgressPercentage(campaign.raised, campaign.goal).toFixed(1)}%)
+                    <div className="progress-stats">
+                      <span className="raised">{formatCurrency(campaign.raised)}</span>
+                      <span className="goal">of {formatCurrency(campaign.goal)}</span>
                     </div>
                   </div>
                   
                   <div className="campaign-meta">
-                    <span>{campaign.donors?.length || 0} donors</span>
-                    <span>Created {new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
+                    <div className="meta-item">
+                      <Users size={16} />
+                      <span>{campaign.donors?.length || 0} donors</span>
+                    </div>
+                    <div className="meta-item">
+                      <Calendar size={16} />
+                      <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
+                    </div>
                     {campaign.raised === 0 && (
                       <button 
                         onClick={() => handleDeleteCampaign(campaign.id, campaign.raised)}
@@ -134,6 +155,15 @@ const Dashboard = () => {
                       </button>
                     )}
                   </div>
+
+                  <div className="campaign-actions">
+                    <Link to={`/campaign/${campaign.id}`} className="btn btn-secondary">
+                      View Details
+                    </Link>
+                    <Link to={`/campaign/${campaign.id}`} className="btn btn-primary">
+                      Manage
+                    </Link>
+                  </div>
                 </div>
               </div>
             ))}
@@ -143,40 +173,58 @@ const Dashboard = () => {
         {campaigns.filter(c => parseInt(c.creatorId || 0) !== parseInt(user?.id || 0)).length > 0 && (
           <>
             <h2>Featured Campaigns</h2>
-            <div className="campaigns-list">
+            <div className="campaigns-grid">
               {campaigns.filter(c => parseInt(c.creatorId || 0) !== parseInt(user?.id || 0)).slice(0, 3).map(campaign => (
-            <div key={campaign.id} className="campaign-item">
-              <div className="campaign-info">
-                <h3>
-                  <Link to={`/campaign/${campaign.id}`}>
-                    {campaign.title}
-                  </Link>
-                </h3>
-                <p className="campaign-category">{campaign.category}</p>
-                <p className="campaign-description">{campaign.description}</p>
-              </div>
-              
-              <div className="campaign-stats">
-                <div className="progress-section">
-                  <div className="progress-bar">
-                    <div 
-                      className="progress-fill" 
-                      style={{ width: `${getProgressPercentage(campaign.raised, campaign.goal)}%` }}
-                    ></div>
+                <div key={campaign.id} className="campaign-card">
+                  <div className="campaign-image">
+                    <img src={getCategoryImage(campaign.category)} alt={campaign.category} />
                   </div>
-                  <div className="progress-text">
-                    {formatCurrency(campaign.raised)} of {formatCurrency(campaign.goal)}
-                    ({getProgressPercentage(campaign.raised, campaign.goal).toFixed(1)}%)
+                  <div className="campaign-content">
+                    <div className="campaign-header">
+                      <h3>
+                        <Link to={`/campaign/${campaign.id}`}>
+                          {campaign.title}
+                        </Link>
+                      </h3>
+                      <span className="campaign-category">{campaign.category}</span>
+                    </div>
+                    <p className="campaign-description">{campaign.description}</p>
+                    
+                    <div className="campaign-progress">
+                      <div className="progress-bar">
+                        <div 
+                          className="progress-fill" 
+                          style={{ width: `${getProgressPercentage(campaign.raised, campaign.goal)}%` }}
+                        ></div>
+                      </div>
+                      <div className="progress-stats">
+                        <span className="raised">{formatCurrency(campaign.raised)}</span>
+                        <span className="goal">of {formatCurrency(campaign.goal)}</span>
+                      </div>
+                    </div>
+                    
+                    <div className="campaign-meta">
+                      <div className="meta-item">
+                        <Users size={16} />
+                        <span>{campaign.donors?.length || 0} donors</span>
+                      </div>
+                      <div className="meta-item">
+                        <Calendar size={16} />
+                        <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+
+                    <div className="campaign-actions">
+                      <Link to={`/campaign/${campaign.id}`} className="btn btn-secondary">
+                        View Details
+                      </Link>
+                      <Link to={`/campaign/${campaign.id}`} className="btn btn-primary">
+                        Contribute
+                      </Link>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="campaign-meta">
-                  <span>{campaign.donors?.length || 0} donors</span>
-                  <span>Created {new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+              ))}
             </div>
           </>
         )}
