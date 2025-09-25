@@ -24,14 +24,35 @@ const apiRequest = async (endpoint, options = {}) => {
   return { data }
 }
 
+const publicApiRequest = async (endpoint, options = {}) => {
+  const config = {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    ...options
+  }
+  
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, config)
+  const data = await response.json()
+  
+  if (!response.ok) {
+    throw new Error(data.error || `HTTP ${response.status}`)
+  }
+  
+  return { data }
+}
+
 export const campaignAPI = {
-  getAll: () => apiRequest('/campaigns'),
-  getById: (id) => apiRequest(`/campaigns/${id}`),
+  getAll: () => publicApiRequest('/campaigns'),
+  getById: (id) => publicApiRequest(`/campaigns/${id}`),
   create: (data) => apiRequest('/campaigns', {
     method: 'POST',
     body: JSON.stringify(data)
   }),
-  getDonations: (id) => apiRequest(`/campaigns/${id}/donations`),
+  delete: (id) => apiRequest(`/campaigns/${id}`, {
+    method: 'DELETE'
+  }),
+  getDonations: (id) => publicApiRequest(`/campaigns/${id}/donations`),
   donate: (data) => donationAPI.create(data)
 }
 

@@ -44,13 +44,24 @@ export const CampaignProvider = ({ children }) => {
       setLoading(true)
       try {
         const res = await campaignAPI.getAll()
-        // backend returns {campaigns: [...], total, pages, current_page}
-        const backendCampaigns = res.data.campaigns || []
+        console.log('Raw API response:', res)
+        console.log('Response data:', res.data)
+        
+        // Handle different response formats
+        let backendCampaigns = []
+        if (res.data.campaigns) {
+          backendCampaigns = res.data.campaigns
+        } else if (Array.isArray(res.data)) {
+          backendCampaigns = res.data
+        }
+        
+        console.log('Backend campaigns:', backendCampaigns)
         const transformedCampaigns = backendCampaigns.map(transformCampaignFromBackend)
+        console.log('Transformed campaigns:', transformedCampaigns)
         setCampaigns(transformedCampaigns)
       } catch (err) {
         setError("Failed to load campaigns")
-        console.error(err)
+        console.error('Campaign fetch error:', err)
       } finally {
         setLoading(false)
       }
@@ -97,8 +108,26 @@ export const CampaignProvider = ({ children }) => {
     }
   }
 
+  const deleteCampaign = async (campaignId) => {
+    try {
+      await campaignAPI.delete(campaignId)
+      // Refresh campaigns after deletion
+      const campaignsRes = await campaignAPI.getAll()
+      const backendCampaigns = campaignsRes.data.campaigns || []
+      const transformedCampaigns = backendCampaigns.map(transformCampaignFromBackend)
+      setCampaigns(transformedCampaigns)
+    } catch (err) {
+      console.error("Error deleting campaign:", err)
+      throw err
+    }
+  }
+
   const getCampaignById = (id) => {
     return campaigns.find(c => parseInt(c.id) === parseInt(id))
+  }
+
+  const getUserCampaigns = (userId) => {
+    return campaigns.filter(c => parseInt(c.creatorId) === parseInt(userId))
   }
 
   const value = {
@@ -107,7 +136,9 @@ export const CampaignProvider = ({ children }) => {
     error,
     addCampaign,
     donateToCampaign,
-    getCampaignById
+    deleteCampaign,
+    getCampaignById,
+    getUserCampaigns
   }
 
   return (

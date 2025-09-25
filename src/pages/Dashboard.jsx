@@ -1,11 +1,26 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCampaigns } from '../context/CampaignContext'
-import { Plus, Target, DollarSign, Users } from 'lucide-react'
+import { Plus, Target, DollarSign, Users, Trash2 } from 'lucide-react'
 
 const Dashboard = () => {
   const { user } = useAuth()
-  const { campaigns } = useCampaigns()
+  const { campaigns, getUserCampaigns, deleteCampaign } = useCampaigns()
+  
+  const handleDeleteCampaign = async (campaignId, campaignRaised) => {
+    if (campaignRaised > 0) {
+      alert('Cannot delete campaigns that have received contributions')
+      return
+    }
+    
+    if (window.confirm('Are you sure you want to delete this campaign?')) {
+      try {
+        await deleteCampaign(campaignId)
+      } catch (err) {
+        alert('Failed to delete campaign')
+      }
+    }
+  }
 
   if (!user) {
     return (
@@ -20,9 +35,9 @@ const Dashboard = () => {
     )
   }
 
-  const userCampaigns = campaigns.filter(campaign => campaign.creatorId === user.id)
-  const totalRaised = userCampaigns.reduce((sum, campaign) => sum + campaign.raised, 0)
-  const totalDonors = userCampaigns.reduce((sum, campaign) => sum + campaign.donors.length, 0)
+  const userCampaigns = user ? getUserCampaigns(user.id) : []
+  const totalRaised = userCampaigns.reduce((sum, campaign) => sum + (campaign.raised || 0), 0)
+  const totalDonors = userCampaigns.reduce((sum, campaign) => sum + (campaign.donors?.length || 0), 0)
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -107,13 +122,63 @@ const Dashboard = () => {
                   </div>
                   
                   <div className="campaign-meta">
-                    <span>{campaign.donors.length} donors</span>
-                    <span>Created {new Date(campaign.createdAt).toLocaleDateString()}</span>
+                    <span>{campaign.donors?.length || 0} donors</span>
+                    <span>Created {new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
+                    {campaign.raised === 0 && (
+                      <button 
+                        onClick={() => handleDeleteCampaign(campaign.id, campaign.raised)}
+                        className="delete-btn"
+                        title="Delete campaign"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
             ))}
           </div>
+        )}
+        
+        {campaigns.filter(c => parseInt(c.creatorId || 0) !== parseInt(user?.id || 0)).length > 0 && (
+          <>
+            <h2>Featured Campaigns</h2>
+            <div className="campaigns-list">
+              {campaigns.filter(c => parseInt(c.creatorId || 0) !== parseInt(user?.id || 0)).slice(0, 3).map(campaign => (
+            <div key={campaign.id} className="campaign-item">
+              <div className="campaign-info">
+                <h3>
+                  <Link to={`/campaign/${campaign.id}`}>
+                    {campaign.title}
+                  </Link>
+                </h3>
+                <p className="campaign-category">{campaign.category}</p>
+                <p className="campaign-description">{campaign.description}</p>
+              </div>
+              
+              <div className="campaign-stats">
+                <div className="progress-section">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress-fill" 
+                      style={{ width: `${getProgressPercentage(campaign.raised, campaign.goal)}%` }}
+                    ></div>
+                  </div>
+                  <div className="progress-text">
+                    {formatCurrency(campaign.raised)} of {formatCurrency(campaign.goal)}
+                    ({getProgressPercentage(campaign.raised, campaign.goal).toFixed(1)}%)
+                  </div>
+                </div>
+                
+                <div className="campaign-meta">
+                  <span>{campaign.donors?.length || 0} donors</span>
+                  <span>Created {new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+            </div>
+          </>
         )}
       </div>
     </div>
