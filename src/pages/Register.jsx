@@ -7,7 +7,8 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    designation: 'user'
   })
   const [error, setError] = useState('')
   const { register } = useAuth()
@@ -20,7 +21,7 @@ const Register = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
@@ -42,11 +43,16 @@ const Register = () => {
     const userData = {
       name: formData.name,
       email: formData.email,
-      password: formData.password
+      password: formData.password,
+      designation: formData.designation
     }
 
-    register(userData)
-    navigate('/')
+    try {
+      await register(userData)
+      navigate('/')
+    } catch (err) {
+      setError('Registration failed')
+    }
   }
 
   return (
@@ -108,6 +114,19 @@ const Register = () => {
               placeholder="Confirm your password"
               required
             />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="designation">Role</label>
+            <select
+              id="designation"
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+            >
+              <option value="user">User</option>
+              <option value="creator">Campaign Creator</option>
+            </select>
           </div>
 
           <button type="submit" className="btn btn-primary btn-full">

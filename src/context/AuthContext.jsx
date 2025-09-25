@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
-import axios from 'axios'
+import { authAPI } from '../services/api'
 
 const AuthContext = createContext()
 
@@ -11,29 +11,20 @@ export const useAuth = () => {
   return context
 }
 
-const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000"
 const STORAGE_USER = 'fundconnect_user'
-const STORAGE_TOKEN = 'fundconnect_token'
+const STORAGE_TOKEN = 'token'
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const setAuthHeader = (token) => {
-    if (token) {
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    } else {
-      delete axios.defaults.headers.common['Authorization']
-    }
-  }
+
 
   useEffect(() => {
     const savedUser = localStorage.getItem(STORAGE_USER)
     const savedToken = localStorage.getItem(STORAGE_TOKEN)
 
-    if (savedToken) setAuthHeader(savedToken)
-
-    if (savedUser) {
+    if (savedUser && savedToken) {
       setUser(JSON.parse(savedUser))
       setLoading(false)
       return
@@ -45,14 +36,13 @@ export const AuthProvider = ({ children }) => {
         return
       }
       try {
-        const res = await axios.get(`${API_URL}/check`)
+        const res = await authAPI.checkSession()
         setUser(res.data)
         localStorage.setItem(STORAGE_USER, JSON.stringify(res.data))
       } catch (err) {
         console.warn('Session invalid or expired', err)
         localStorage.removeItem(STORAGE_TOKEN)
         localStorage.removeItem(STORAGE_USER)
-        setAuthHeader(null)
       } finally {
         setLoading(false)
       }
@@ -61,14 +51,13 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
   const login = async (credentials) => {
-    // credentials: { email, password }
+    // credentials: { name, password }
     try {
-      const res = await axios.post(`${API_URL}/login`, credentials)
+      const res = await authAPI.login(credentials)
       const token = res.data.token
       const userData = res.data.user
       localStorage.setItem(STORAGE_TOKEN, token)
       localStorage.setItem(STORAGE_USER, JSON.stringify(userData))
-      setAuthHeader(token)
       setUser(userData)
       return userData
     } catch (err) {
@@ -80,22 +69,18 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem(STORAGE_TOKEN)
     localStorage.removeItem(STORAGE_USER)
-    setAuthHeader(null)
     setUser(null)
   }
 
   const register = async (userData) => {
-    // userData: { name, email, password, designation? }
+    // userData: { name, email, password, designation }
     try {
-      const res = await axios.post(`${API_URL}/users`, userData)
-      // server returns token and user
-      const token = res.data.token
-      const newUser = res.data.user
-      localStorage.setItem(STORAGE_TOKEN, token)
-      localStorage.setItem(STORAGE_USER, JSON.stringify(newUser))
-      setAuthHeader(token)
-      setUser(newUser)
-      return newUser
+      const res = await authAPI.register(userData)
+      // Backend only returns success message, need to login after registration
+      if (res.data.message === 'User created successfully') {
+        return await login({ name: userData.name, password: userData.password })
+      }
+      throw new Error('Registration failed')
     } catch (err) {
       console.error('Registration failed', err.response?.data || err.message)
       throw err

@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext'
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
+    name: '',
     password: ''
   })
   const [error, setError] = useState('')
@@ -18,26 +18,21 @@ const Login = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    // Simple validation for MVP
-    if (!formData.email || !formData.password) {
+    if (!formData.name || !formData.password) {
       setError('Please fill in all fields')
       return
     }
 
-    // Mock login - in real app, this would call an API
-    const userData = {
-      id: Date.now(),
-      email: formData.email,
-      name: formData.email.split('@')[0],
-      role: 'user'
+    try {
+      await login(formData)
+      navigate('/')
+    } catch (err) {
+      setError('Invalid credentials')
     }
-
-    login(userData)
-    navigate('/')
   }
 
   return (
@@ -50,14 +45,14 @@ const Login = () => {
           {error && <div className="error-message">{error}</div>}
           
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="name">Username</label>
             <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
+              type="text"
+              id="name"
+              name="name"
+              value={formData.name}
               onChange={handleChange}
-              placeholder="Enter your email"
+              placeholder="Enter your username"
               required
             />
           </div>

@@ -33,7 +33,7 @@ const CreateCampaign = () => {
     })
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
@@ -55,13 +55,18 @@ const CreateCampaign = () => {
 
     const campaignData = {
       ...formData,
-      goal: goal,
-      creatorId: user.id,
-      creatorName: user.name
+      goal: goal
     }
 
-    const newCampaign = addCampaign(campaignData)
-    navigate(`/campaign/${newCampaign.id}`)
+    try {
+      console.log('Sending campaign data:', campaignData)
+      const newCampaign = await addCampaign(campaignData)
+      console.log('Campaign created:', newCampaign)
+      navigate('/')
+    } catch (err) {
+      console.error('Campaign creation error:', err)
+      setError(`Failed to create campaign: ${err.message}`)
+    }
   }
 
   if (!user) {
