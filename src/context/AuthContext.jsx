@@ -12,7 +12,7 @@ export const useAuth = () => {
 }
 
 const STORAGE_USER = 'fundconnect_user'
-const STORAGE_TOKEN = 'token'
+const STORAGE_TOKEN = 'fundconnect_token'
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
@@ -73,17 +73,17 @@ export const AuthProvider = ({ children }) => {
   }
 
   const register = async (userData) => {
-    // userData: { name, email, password, designation }
     try {
+      console.log('Registering user:', userData)
       const res = await authAPI.register(userData)
-      // Backend only returns success message, need to login after registration
+      console.log('Registration response:', res)
       if (res.data.message === 'User created successfully') {
         return await login({ name: userData.name, password: userData.password })
       }
       throw new Error('Registration failed')
     } catch (err) {
-      console.error('Registration failed', err.response?.data || err.message)
-      throw err
+      console.error('Registration error details:', err)
+      throw new Error(err.message || 'Registration failed')
     }
   }
 

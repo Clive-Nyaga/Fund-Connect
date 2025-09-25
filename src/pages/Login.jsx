@@ -8,6 +8,7 @@ const Login = () => {
     password: ''
   })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
@@ -21,9 +22,11 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setLoading(true)
 
     if (!formData.name || !formData.password) {
       setError('Please fill in all fields')
+      setLoading(false)
       return
     }
 
@@ -32,6 +35,8 @@ const Login = () => {
       navigate('/')
     } catch (err) {
       setError('Invalid credentials')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -70,8 +75,8 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-full">
-            Sign In
+          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
 

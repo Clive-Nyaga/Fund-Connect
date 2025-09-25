@@ -7,10 +7,10 @@ const Register = () => {
     name: '',
     email: '',
     password: '',
-    confirmPassword: '',
-    designation: 'user'
+    confirmPassword: ''
   })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
 
@@ -24,19 +24,23 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setLoading(true)
 
     if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
       setError('Please fill in all fields')
+      setLoading(false)
       return
     }
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match')
+      setLoading(false)
       return
     }
 
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters')
+      setLoading(false)
       return
     }
 
@@ -44,14 +48,17 @@ const Register = () => {
       name: formData.name,
       email: formData.email,
       password: formData.password,
-      designation: formData.designation
+      designation: 'user'
     }
 
     try {
       await register(userData)
       navigate('/')
     } catch (err) {
-      setError('Registration failed')
+      console.error('Registration error in component:', err)
+      setError(err.message || 'Registration failed')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -116,21 +123,10 @@ const Register = () => {
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="designation">Role</label>
-            <select
-              id="designation"
-              name="designation"
-              value={formData.designation}
-              onChange={handleChange}
-            >
-              <option value="user">User</option>
-              <option value="creator">Campaign Creator</option>
-            </select>
-          </div>
 
-          <button type="submit" className="btn btn-primary btn-full">
-            Create Account
+
+          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+            {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 

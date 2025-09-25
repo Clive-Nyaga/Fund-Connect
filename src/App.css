@@ -143,70 +143,104 @@ body {
   width: 100%;
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn:disabled:hover {
+  background: #e11d48;
+  transform: none;
+}
+
 /* Home Page */
 .home {
   width: 100%;
   margin: 0;
   padding: 0;
+  min-height: calc(100vh - 70px);
 }
 
 .hero {
   text-align: center;
-  padding: 80px 20px;
+  padding: clamp(60px, 8vw, 120px) clamp(20px, 5vw, 60px);
   background: linear-gradient(135deg, #e11d48 0%, #be185d 100%);
   color: white;
-  margin: 0 0 60px 0;
+  margin: 0 0 clamp(40px, 6vw, 80px) 0;
+  width: 100%;
+  min-height: clamp(400px, 50vh, 600px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-content {
+  max-width: 800px;
   width: 100%;
 }
 
 .hero-content h1 {
-  font-size: 48px;
+  font-size: clamp(32px, 6vw, 64px);
   font-weight: bold;
-  margin-bottom: 16px;
+  margin-bottom: clamp(16px, 2vw, 24px);
+  line-height: 1.2;
 }
 
 .hero-content p {
-  font-size: 20px;
-  margin-bottom: 32px;
+  font-size: clamp(16px, 2.5vw, 24px);
+  margin-bottom: clamp(24px, 4vw, 48px);
   opacity: 0.9;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero-actions {
   display: flex;
-  gap: 16px;
+  gap: clamp(12px, 2vw, 20px);
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .campaigns-section {
   width: 100%;
-  padding: 0 20px;
+  padding: 0 clamp(20px, 5vw, 60px);
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .campaigns-section h2 {
-  font-size: 32px;
-  margin-bottom: 32px;
+  font-size: clamp(24px, 4vw, 40px);
+  margin-bottom: clamp(24px, 4vw, 48px);
   text-align: center;
 }
 
 .no-campaigns {
   text-align: center;
-  padding: 60px 20px;
+  padding: clamp(40px, 8vw, 80px) clamp(20px, 4vw, 40px);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .campaigns-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 24px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
+  gap: clamp(16px, 3vw, 32px);
+  margin-bottom: clamp(40px, 6vw, 80px);
+  padding-bottom: clamp(40px, 6vw, 80px);
 }
 
 .campaign-card {
   background: white;
   border-radius: 12px;
-  padding: 24px;
+  padding: clamp(16px, 3vw, 32px);
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   border: 1px solid #e2e8f0;
   transition: transform 0.2s, box-shadow 0.2s;
+  height: fit-content;
 }
 
 .campaign-card:hover {
@@ -222,10 +256,11 @@ body {
 }
 
 .campaign-header h3 {
-  font-size: 20px;
+  font-size: clamp(16px, 2.5vw, 22px);
   font-weight: 600;
   color: #1e293b;
   margin: 0;
+  line-height: 1.3;
 }
 
 .campaign-category {
@@ -241,7 +276,12 @@ body {
 .campaign-description {
   color: #64748b;
   margin-bottom: 20px;
-  line-height: 1.5;
+  line-height: 1.6;
+  font-size: clamp(14px, 1.8vw, 16px);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .campaign-progress {
@@ -309,6 +349,12 @@ body {
   width: 100%;
   max-width: 400px;
   text-align: center;
+  border: 1px solid #f1f5f9;
+  transition: box-shadow 0.3s ease;
+}
+
+.auth-container:hover {
+  box-shadow: 0 15px 35px rgba(0,0,0,0.15);
 }
 
 .auth-container h2 {
@@ -354,6 +400,19 @@ body {
   outline: none;
   border-color: #e11d48;
   box-shadow: 0 0 0 3px rgba(225, 29, 72, 0.1);
+  transform: translateY(-1px);
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  transition: all 0.2s ease;
+}
+
+.form-group input:hover,
+.form-group select:hover,
+.form-group textarea:hover {
+  border-color: #cbd5e1;
 }
 
 .error-message {
@@ -393,6 +452,12 @@ body {
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   max-width: 800px;
   margin: 0 auto;
+  border: 1px solid #f1f5f9;
+  transition: box-shadow 0.3s ease;
+}
+
+.form-container:hover {
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
 }
 
 .form-container h2 {
@@ -829,12 +894,16 @@ body {
 .contact-content {
   width: 100%;
   padding: 60px 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 60px;
+  display: flex;
+  justify-content: center;
 }
 
-.contact-info h2 {
+.contact-info-centered {
+  max-width: 800px;
+  text-align: center;
+}
+
+.contact-info-centered h2 {
   font-size: 28px;
   margin-bottom: 20px;
   color: #1e293b;
@@ -842,6 +911,12 @@ body {
 
 .contact-methods {
   margin-top: 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 32px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .contact-method {
@@ -939,84 +1014,32 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-  .nav-container {
-    padding: 0 16px;
+@media (max-width: 1200px) {
+  .campaigns-section {
+    padding: 0 clamp(16px, 4vw, 40px);
+  }
+}
+
+@media (max-width: 480px) {
+  .campaigns-section {
+    padding: 0 12px;
   }
   
-  .nav-links {
-    gap: 12px;
+  .hero {
+    padding: clamp(40px, 10vw, 80px) 16px;
   }
   
-  .nav-link {
-    padding: 6px 12px;
-    font-size: 13px;
+  .campaign-card {
+    padding: 16px;
   }
   
-  .hero-content h1 {
-    font-size: 32px;
+  .no-campaigns {
+    padding: 40px 16px;
   }
-  
-  .hero-content p {
-    font-size: 16px;
-  }
-  
-  .hero-actions {
-    flex-direction: column;
-    align-items: center;
-  }
-  
+}
+
+@media (min-width: 1400px) {
   .campaigns-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .campaign-content {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  
-  .campaign-sidebar {
-    position: static;
-  }
-  
-  .dashboard-header {
-    flex-direction: column;
-    gap: 20px;
-    text-align: center;
-  }
-  
-  .campaign-item {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  .auth-container {
-    padding: 24px;
-  }
-  
-  .form-container {
-    padding: 24px;
-  }
-  
-  .contact-content {
-    grid-template-columns: 1fr;
-    gap: 40px;
-  }
-  
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .cta-buttons {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .features-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .served-groups {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
   }
 }

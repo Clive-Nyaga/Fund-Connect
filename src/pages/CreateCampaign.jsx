@@ -11,6 +11,7 @@ const CreateCampaign = () => {
     category: 'entrepreneurship'
   })
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const { user } = useAuth()
   const { addCampaign } = useCampaigns()
   const navigate = useNavigate()
@@ -36,47 +37,52 @@ const CreateCampaign = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setLoading(true)
 
     if (!user) {
       setError('You must be logged in to create a campaign')
+      setLoading(false)
       return
     }
 
     if (!formData.title || !formData.description || !formData.goal) {
       setError('Please fill in all required fields')
+      setLoading(false)
       return
     }
 
     const goal = parseFloat(formData.goal)
     if (isNaN(goal) || goal <= 0) {
       setError('Please enter a valid goal amount')
+      setLoading(false)
       return
     }
 
     const campaignData = {
-      ...formData,
-      goal: goal
+      title: formData.title,
+      description: formData.description,
+      goal: goal,
+      category: formData.category
     }
 
     try {
-      console.log('Sending campaign data:', campaignData)
-      const newCampaign = await addCampaign(campaignData)
-      console.log('Campaign created:', newCampaign)
+      await addCampaign(campaignData)
       navigate('/')
     } catch (err) {
-      console.error('Campaign creation error:', err)
       setError(`Failed to create campaign: ${err.message}`)
+    } finally {
+      setLoading(false)
     }
   }
 
-  if (!user) {
+  if (!user || !localStorage.getItem('fundconnect_token')) {
     return (
       <div className="auth-required">
         <h2>Ready to Start Fundraising?</h2>
-        <p>Create an account to launch your campaign and start raising funds for your cause.</p>
+        <p>Please log in to create a campaign and start raising funds for your cause.</p>
         <div className="auth-actions">
-          <Link to="/register" className="btn btn-primary">Create Account</Link>
-          <Link to="/login" className="btn btn-secondary">Already have an account? Sign In</Link>
+          <Link to="/login" className="btn btn-primary">Sign In</Link>
+          <Link to="/register" className="btn btn-secondary">Create Account</Link>
         </div>
       </div>
     )
@@ -148,8 +154,8 @@ const CreateCampaign = () => {
             />
           </div>
 
-          <button type="submit" className="btn btn-primary btn-full">
-            Create Campaign
+          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
+            {loading ? 'Creating Campaign...' : 'Create Campaign'}
           </button>
         </form>
       </div>
