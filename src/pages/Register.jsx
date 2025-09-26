@@ -1,55 +1,28 @@
-import { useState } from 'react'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
+const validationSchema = Yup.object({
+  name: Yup.string().required('Full name is required'),
+  email: Yup.string().email('Invalid email format').required('Email is required'),
+  designation: Yup.string().required('Account type is required'),
+  password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required'),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref('password')], 'Passwords must match')
+    .required('Please confirm your password')
+})
+
 const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    designation: 'Individual'
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
   const { register } = useAuth()
   const navigate = useNavigate()
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword || !formData.designation) {
-      setError('Please fill in all fields')
-      setLoading(false)
-      return
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      setLoading(false)
-      return
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters')
-      setLoading(false)
-      return
-    }
-
+  const handleSubmit = async (values, { setSubmitting, setStatus }) => {
     const userData = {
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-      designation: formData.designation
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      designation: values.designation
     }
 
     try {
@@ -57,9 +30,9 @@ const Register = () => {
       navigate('/')
     } catch (err) {
       console.error('Registration error in component:', err)
-      setError(err.message || 'Registration failed')
+      setStatus(err.message || 'Registration failed')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -69,81 +42,80 @@ const Register = () => {
         <h2>Join FundConnect</h2>
         <p>Create your account to start fundraising or supporting causes</p>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          {error && <div className="error-message">{error}</div>}
-          
-          <div className="form-group">
-            <label htmlFor="name">Full Name</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your full name"
-              required
-            />
-          </div>
+        <Formik
+          initialValues={{
+            name: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            designation: 'Individual'
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, status }) => (
+            <Form className="auth-form">
+              {status && <div className="error-message">{status}</div>}
+              
+              <div className="form-group">
+                <label htmlFor="name">Full Name</label>
+                <Field
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Enter your full name"
+                />
+                <ErrorMessage name="name" component="div" className="error-message" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+              <div className="form-group">
+                <label htmlFor="email">Email</label>
+                <Field
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="Enter your email"
+                />
+                <ErrorMessage name="email" component="div" className="error-message" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="designation">Account Type</label>
-            <select
-              id="designation"
-              name="designation"
-              value={formData.designation}
-              onChange={handleChange}
-              required
-            >
-              <option value="Individual">Individual</option>
-              <option value="Organization">Organization</option>
-            </select>
-          </div>
+              <div className="form-group">
+                <label htmlFor="designation">Account Type</label>
+                <Field as="select" id="designation" name="designation">
+                  <option value="Individual">Individual</option>
+                  <option value="Organization">Organization</option>
+                </Field>
+                <ErrorMessage name="designation" component="div" className="error-message" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a password"
-              required
-            />
-          </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <Field
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Create a password"
+                />
+                <ErrorMessage name="password" component="div" className="error-message" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              placeholder="Confirm your password"
-              required
-            />
-          </div>
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <Field
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                />
+                <ErrorMessage name="confirmPassword" component="div" className="error-message" />
+              </div>
 
-
-
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? 'Creating Account...' : 'Create Account'}
-          </button>
-        </form>
+              <button type="submit" className="btn btn-primary btn-full" disabled={isSubmitting}>
+                {isSubmitting ? 'Creating Account...' : 'Create Account'}
+              </button>
+            </Form>
+          )}
+        </Formik>
 
         <p className="auth-switch">
           Already have an account? <Link to="/login">Sign in</Link>
