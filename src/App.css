@@ -936,7 +936,7 @@ body {
 .about-hero {
   text-align: center;
   padding: 80px 20px;
-  background: linear-gradient(135deg, #e11d48 0%, #be185d 100%);
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
   color: white;
 }
 
@@ -964,7 +964,7 @@ body {
 }
 
 .feature-card {
-  background: white;
+  background: #fef2f2;
   padding: 32px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
