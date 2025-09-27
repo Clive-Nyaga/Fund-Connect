@@ -14,12 +14,13 @@ const Home = () => {
   console.log('Home page - campaigns:', campaigns, 'loading:', loading, 'error:', error)
   
   const filteredCampaigns = campaigns.filter(campaign => {
-    const matchesCategory = !categoryFilter || campaign.category === categoryFilter
+    console.log('Campaign category:', campaign.category, 'Filter:', categoryFilter)
+    const matchesCategory = !categoryFilter || campaign.category?.toLowerCase() === categoryFilter.toLowerCase()
     const matchesPrice = !priceRange || (
-      priceRange === 'under1000' && campaign.goal < 1000 ||
-      priceRange === '1000-5000' && campaign.goal >= 1000 && campaign.goal <= 5000 ||
-      priceRange === '5000-10000' && campaign.goal >= 5000 && campaign.goal <= 10000 ||
-      priceRange === 'over10000' && campaign.goal > 10000
+      (priceRange === 'under1000' && campaign.goal < 1000) ||
+      (priceRange === '1000-5000' && campaign.goal >= 1000 && campaign.goal <= 5000) ||
+      (priceRange === '5000-10000' && campaign.goal >= 5000 && campaign.goal <= 10000) ||
+      (priceRange === 'over10000' && campaign.goal > 10000)
     )
     return matchesCategory && matchesPrice
   })
@@ -122,7 +123,7 @@ const Home = () => {
                   </div>
                   <div className="campaign-content">
                     <div className="campaign-header">
-                      <h3>{campaign.title}</h3>
+                      <h3>{campaign.title.length > 25 ? campaign.title.substring(0, 25) + '...' : campaign.title}</h3>
                       <span className="campaign-category">{campaign.category}</span>
                     </div>
                   <p className="campaign-description">{campaign.description}</p>
@@ -140,11 +141,9 @@ const Home = () => {
                     </div>
                   </div>
 
-                  <div className="campaign-meta">
-                    <div className="meta-item">
-                      <Calendar size={16} />
-                      <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
-                    </div>
+                  <div className="meta-item">
+                    <Calendar size={16} />
+                    <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
                   </div>
 
                     <div className="campaign-actions">

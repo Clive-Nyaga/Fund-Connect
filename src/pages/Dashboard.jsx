@@ -125,7 +125,7 @@ const Dashboard = () => {
                   <div className="campaign-header">
                     <h3>
                       <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }}>
-                        {campaign.title}
+                        {campaign.title.length > 25 ? campaign.title.substring(0, 25) + '...' : campaign.title}
                       </Link>
                     </h3>
                     <span className="campaign-category">{campaign.category}</span>
@@ -145,12 +145,8 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  <div className="campaign-meta">
-                    <div className="meta-item">
-                      <Calendar size={16} />
-                      <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
-                    </div>
-                    {campaign.raised === 0 && (
+                  {campaign.raised === 0 && (
+                    <div className="campaign-meta">
                       <button 
                         onClick={() => handleDeleteClick(campaign)}
                         className="delete-btn"
@@ -158,7 +154,12 @@ const Dashboard = () => {
                       >
                         <Trash2 size={16} />
                       </button>
-                    )}
+                    </div>
+                  )}
+
+                  <div className="meta-item">
+                    <Calendar size={16} />
+                    <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
                   </div>
 
                   <div className="campaign-actions">
@@ -175,12 +176,12 @@ const Dashboard = () => {
         {(() => {
           const featuredCampaigns = campaigns.filter(c => parseInt(c.creatorId || 0) !== parseInt(user?.id || 0))
           const filteredFeatured = featuredCampaigns.filter(campaign => {
-            const matchesCategory = !categoryFilter || campaign.category === categoryFilter
+            const matchesCategory = !categoryFilter || campaign.category?.toLowerCase() === categoryFilter.toLowerCase()
             const matchesPrice = !priceRange || (
-              priceRange === 'under1000' && campaign.goal < 1000 ||
-              priceRange === '1000-5000' && campaign.goal >= 1000 && campaign.goal <= 5000 ||
-              priceRange === '5000-10000' && campaign.goal >= 5000 && campaign.goal <= 10000 ||
-              priceRange === 'over10000' && campaign.goal > 10000
+              (priceRange === 'under1000' && campaign.goal < 1000) ||
+              (priceRange === '1000-5000' && campaign.goal >= 1000 && campaign.goal <= 5000) ||
+              (priceRange === '5000-10000' && campaign.goal >= 5000 && campaign.goal <= 10000) ||
+              (priceRange === 'over10000' && campaign.goal > 10000)
             )
             return matchesCategory && matchesPrice
           })
@@ -227,7 +228,7 @@ const Dashboard = () => {
                     <div className="campaign-header">
                       <h3>
                         <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }}>
-                          {campaign.title}
+                          {campaign.title.length > 25 ? campaign.title.substring(0, 25) + '...' : campaign.title}
                         </Link>
                       </h3>
                       <span className="campaign-category">{campaign.category}</span>
@@ -247,11 +248,9 @@ const Dashboard = () => {
                       </div>
                     </div>
                     
-                    <div className="campaign-meta">
-                      <div className="meta-item">
-                        <Calendar size={16} />
-                        <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
-                      </div>
+                    <div className="meta-item">
+                      <Calendar size={16} />
+                      <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
                     </div>
 
                     <div className="campaign-actions">

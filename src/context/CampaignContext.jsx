@@ -18,7 +18,7 @@ const transformCampaignFromBackend = (backendCampaign) => {
     ...backendCampaign,
     goal: backendCampaign.targetamount,
     raised: backendCampaign.raisedamount || 0,
-    title: backendCampaign.description,
+    title: backendCampaign.name || backendCampaign.description,
     creatorId: backendCampaign.user_id,
     creatorName: backendCampaign.user?.name || 'Unknown',
     creatorDesignation: backendCampaign.user?.designation || 'Individual',
@@ -30,8 +30,9 @@ const transformCampaignFromBackend = (backendCampaign) => {
 // Transform frontend campaign data to backend format
 const transformCampaignToBackend = (frontendCampaign) => {
   return {
+    name: frontendCampaign.title,
     category: frontendCampaign.category,
-    description: frontendCampaign.title || frontendCampaign.description,
+    description: frontendCampaign.description,
     targetamount: frontendCampaign.goal
   }
 }
