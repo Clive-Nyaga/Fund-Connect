@@ -51,7 +51,7 @@ const Home = () => {
                 <Link to="/login" className="btn btn-secondary">Sign In</Link>
               </>
             ) : (
-              <Link to="/create-campaign" className="btn btn-primary">Create Campaign</Link>
+              <Link to="/create-campaign" className="btn btn-success">Create Campaign</Link>
             )}
           </div>
         </div>
@@ -66,7 +66,7 @@ const Home = () => {
         ) : campaigns.length === 0 ? (
           <div className="no-campaigns">
             <p>No campaigns yet. {user ? 'Be the first to create one!' : 'Sign up to create the first campaign!'}</p>
-            <Link to={user ? "/create-campaign" : "/register"} className="btn btn-primary">
+            <Link to={user ? "/create-campaign" : "/register"} className={user ? "btn btn-success" : "btn btn-primary"}>
               {user ? 'Create Campaign' : 'Get Started'}
             </Link>
           </div>
@@ -100,21 +100,14 @@ const Home = () => {
 
                   <div className="campaign-meta">
                     <div className="meta-item">
-                      <Users size={16} />
-                      <span>{campaign.supporters || 0} supporters</span>
-                    </div>
-                    <div className="meta-item">
                       <Calendar size={16} />
                       <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
                     </div>
                   </div>
 
                     <div className="campaign-actions">
-                      <Link to={`/campaign/${campaign.id}`} className="btn btn-secondary">
-                        View Details
-                      </Link>
                       <Link to={`/campaign/${campaign.id}`} className="btn btn-primary">
-                        Contribute
+                        View Details
                       </Link>
                     </div>
                   </div>

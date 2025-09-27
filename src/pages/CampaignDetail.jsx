@@ -131,6 +131,16 @@ const CampaignDetail = () => {
             <p>{campaign.description}</p>
           </div>
 
+          <div className="campaign-creator">
+            <h3>Campaign Creator</h3>
+            <div className="creator-info">
+              <div className="creator-details">
+                <h4>{campaign.creatorName}</h4>
+                <p className="creator-designation">{campaign.creatorDesignation || 'Individual'}</p>
+              </div>
+            </div>
+          </div>
+
           {campaign.donors && campaign.donors.length > 0 && (
             <div className="donors-section">
               <h3>Recent Donors</h3>
@@ -161,10 +171,7 @@ const CampaignDetail = () => {
                 <Target size={20} />
                 <span>of {formatCurrency(campaign.goal)} goal</span>
               </div>
-              <div className="donors-count">
-                <Users size={20} />
-                <span>{campaign.supporters || 0} supporters</span>
-              </div>
+
             </div>
 
             <div className="progress-section">

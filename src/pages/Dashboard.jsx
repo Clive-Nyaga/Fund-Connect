@@ -100,13 +100,6 @@ const Dashboard = () => {
             <p>Total Raised</p>
           </div>
         </div>
-        <div className="stat-card">
-          <Users className="stat-icon" />
-          <div className="stat-content">
-            <h3>{totalDonors}</h3>
-            <p>Total Supporters</p>
-          </div>
-        </div>
       </div>
 
       <div className="dashboard-content">
@@ -151,10 +144,6 @@ const Dashboard = () => {
                   
                   <div className="campaign-meta">
                     <div className="meta-item">
-                      <Users size={16} />
-                      <span>{campaign.supporters || 0} supporters</span>
-                    </div>
-                    <div className="meta-item">
                       <Calendar size={16} />
                       <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
                     </div>
@@ -170,11 +159,8 @@ const Dashboard = () => {
                   </div>
 
                   <div className="campaign-actions">
-                    <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }} className="btn btn-secondary">
-                      View Details
-                    </Link>
                     <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }} className="btn btn-primary">
-                      Manage
+                      View Details
                     </Link>
                   </div>
                 </div>
@@ -218,10 +204,6 @@ const Dashboard = () => {
                     
                     <div className="campaign-meta">
                       <div className="meta-item">
-                        <Users size={16} />
-                        <span>{campaign.supporters || 0} supporters</span>
-                      </div>
-                      <div className="meta-item">
                         <Calendar size={16} />
                         <span>{new Date(campaign.createdAt || Date.now()).toLocaleDateString()}</span>
                       </div>
@@ -230,9 +212,6 @@ const Dashboard = () => {
                     <div className="campaign-actions">
                       <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }} className="btn btn-secondary">
                         View Details
-                      </Link>
-                      <Link to={`/campaign/${campaign.id}`} state={{ from: 'dashboard' }} className="btn btn-primary">
-                        Contribute
                       </Link>
                     </div>
                   </div>

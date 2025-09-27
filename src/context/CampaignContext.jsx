@@ -21,6 +21,7 @@ const transformCampaignFromBackend = (backendCampaign) => {
     title: backendCampaign.description,
     creatorId: backendCampaign.user_id,
     creatorName: backendCampaign.user?.name || 'Unknown',
+    creatorDesignation: backendCampaign.user?.designation || 'Individual',
     supporters: backendCampaign.supporters || 0,
     donors: backendCampaign.donations || []
   }
@@ -79,8 +80,18 @@ export const CampaignProvider = ({ children }) => {
       const res = await campaignAPI.create(backendData)
       // Refresh campaigns after creation
       const campaignsRes = await campaignAPI.getAll()
-      const backendCampaigns = campaignsRes.data.campaigns || []
+      console.log('Campaigns after creation:', campaignsRes)
+      
+      let backendCampaigns = []
+      if (campaignsRes.data.campaigns) {
+        backendCampaigns = campaignsRes.data.campaigns
+      } else if (Array.isArray(campaignsRes.data)) {
+        backendCampaigns = campaignsRes.data
+      }
+      
+      console.log('Backend campaigns after creation:', backendCampaigns)
       const transformedCampaigns = backendCampaigns.map(transformCampaignFromBackend)
+      console.log('Transformed campaigns after creation:', transformedCampaigns)
       setCampaigns(transformedCampaigns)
       return res.data
     } catch (err) {
