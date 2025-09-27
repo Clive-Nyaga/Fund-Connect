@@ -1,4 +1,4 @@
-import { Mail, Phone, MapPin } from 'lucide-react'
+import { Mail, Phone, MapPin, Clock, Users, Heart } from 'lucide-react'
 
 const Contact = () => {
   return (
@@ -6,7 +6,7 @@ const Contact = () => {
       <section className="contact-hero">
         <div className="hero-content">
           <h1>Contact Us</h1>
-          <p>We're here to help and answer any questions you might have</p>
+          <p>We're here to help and answer any questions you might have about FundConnect</p>
         </div>
       </section>
 
@@ -14,37 +14,55 @@ const Contact = () => {
         <div className="contact-info-centered">
           <h2>Get in Touch</h2>
           <p>
-            Have questions about FundConnect? Need help with your campaign? 
-            Want to report an issue? We'd love to hear from you.
+            Whether you're starting your first campaign, need technical support, or want to learn more about our platform, 
+            our dedicated team is ready to assist you every step of the way.
           </p>
           
           <div className="contact-methods">
             <div className="contact-method">
               <Mail className="contact-icon" />
-              <div>
-                <h4>Email Us</h4>
-                <p>support@fundconnect.com</p>
-                <p>We typically respond within 24 hours</p>
-              </div>
+              <h4>Email Support</h4>
+              <p>support@fundconnect.com</p>
+              <p>Get detailed help with campaigns, donations, and technical issues. We respond within 24 hours.</p>
             </div>
             
             <div className="contact-method">
               <Phone className="contact-icon" />
-              <div>
-                <h4>Call Us</h4>
-                <p>+1 (555) 123-4567</p>
-                <p>Monday - Friday, 9 AM - 6 PM EST</p>
-              </div>
+              <h4>Phone Support</h4>
+              <p>+1 (555) 123-4567</p>
+              <p>Speak directly with our support team Monday through Friday, 9 AM - 6 PM EST.</p>
             </div>
             
             <div className="contact-method">
               <MapPin className="contact-icon" />
-              <div>
-                <h4>Visit Us</h4>
-                <p>123 Innovation Drive</p>
-                <p>Tech City, TC 12345</p>
-              </div>
+              <h4>Visit Our Office</h4>
+              <p>123 Innovation Drive, Tech City, TC 12345</p>
+              <p>Schedule an appointment to meet our team and learn about partnership opportunities.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="contact-cta">
+        <h3>Ready to Start Your Campaign?</h3>
+        <p>Join thousands of successful fundraisers who have raised millions for causes that matter.</p>
+        
+        <div className="contact-stats">
+          <div className="contact-stat">
+            <h4>10K+</h4>
+            <p>Active Campaigns</p>
+          </div>
+          <div className="contact-stat">
+            <h4>$2M+</h4>
+            <p>Funds Raised</p>
+          </div>
+          <div className="contact-stat">
+            <h4>50K+</h4>
+            <p>Happy Donors</p>
+          </div>
+          <div className="contact-stat">
+            <h4>24/7</h4>
+            <p>Platform Uptime</p>
           </div>
         </div>
       </section>

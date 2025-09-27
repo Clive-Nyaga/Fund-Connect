@@ -1,17 +1,17 @@
-import { useState } from 'react'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useCampaigns } from '../context/CampaignContext'
 
+const validationSchema = Yup.object({
+  title: Yup.string().required('Campaign title is required'),
+  description: Yup.string().min(10, 'Description must be at least 10 characters').required('Description is required'),
+  goal: Yup.number().positive('Goal must be a positive number').required('Funding goal is required'),
+  category: Yup.string().required('Category is required')
+})
+
 const CreateCampaign = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    goal: '',
-    category: 'entrepreneurship'
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
   const { user } = useAuth()
   const { addCampaign } = useCampaigns()
   const navigate = useNavigate()
@@ -25,51 +25,27 @@ const CreateCampaign = () => {
     'wars'
   ]
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
+  const handleSubmit = async (values, { setSubmitting, setStatus }) => {
     if (!user) {
-      setError('You must be logged in to create a campaign')
-      setLoading(false)
-      return
-    }
-
-    if (!formData.title || !formData.description || !formData.goal) {
-      setError('Please fill in all required fields')
-      setLoading(false)
-      return
-    }
-
-    const goal = parseFloat(formData.goal)
-    if (isNaN(goal) || goal <= 0) {
-      setError('Please enter a valid goal amount')
-      setLoading(false)
+      setStatus('You must be logged in to create a campaign')
+      setSubmitting(false)
       return
     }
 
     const campaignData = {
-      title: formData.title,
-      description: formData.description,
-      goal: goal,
-      category: formData.category
+      title: values.title,
+      description: values.description,
+      goal: parseFloat(values.goal),
+      category: values.category
     }
 
     try {
       await addCampaign(campaignData)
       navigate('/')
     } catch (err) {
-      setError(`Failed to create campaign: ${err.message}`)
+      setStatus(`Failed to create campaign: ${err.message}`)
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -92,70 +68,74 @@ const CreateCampaign = () => {
         <h2>Create Your Campaign</h2>
         <p>Share your vision and start raising funds for your cause</p>
 
-        <form onSubmit={handleSubmit} className="campaign-form">
-          {error && <div className="error-message">{error}</div>}
-          
-          <div className="form-group">
-            <label htmlFor="title">Campaign Title *</label>
-            <input
-              type="text"
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              placeholder="Enter a compelling title for your campaign"
-              required
-            />
-          </div>
+        <Formik
+          initialValues={{
+            title: '',
+            description: '',
+            goal: '',
+            category: 'entrepreneurship'
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, status }) => (
+            <Form className="campaign-form">
+              {status && <div className="error-message">{status}</div>}
+              
+              <div className="form-group">
+                <label htmlFor="title">Campaign Title *</label>
+                <Field
+                  type="text"
+                  id="title"
+                  name="title"
+                  placeholder="Enter a compelling title for your campaign"
+                />
+                <ErrorMessage name="title" component="div" className="error-message" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="category">Category</label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-            >
-              {categories.map(category => (
-                <option key={category} value={category}>
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
-                </option>
-              ))}
-            </select>
-          </div>
+              <div className="form-group">
+                <label htmlFor="category">Category</label>
+                <Field as="select" id="category" name="category">
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </option>
+                  ))}
+                </Field>
+                <ErrorMessage name="category" component="div" className="error-message" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="goal">Funding Goal ($) *</label>
-            <input
-              type="number"
-              id="goal"
-              name="goal"
-              value={formData.goal}
-              onChange={handleChange}
-              placeholder="Enter your funding goal"
-              min="1"
-              step="0.01"
-              required
-            />
-          </div>
+              <div className="form-group">
+                <label htmlFor="goal">Funding Goal ($) *</label>
+                <Field
+                  type="number"
+                  id="goal"
+                  name="goal"
+                  placeholder="Enter your funding goal"
+                  min="1"
+                  step="0.01"
+                />
+                <ErrorMessage name="goal" component="div" className="error-message" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="description">Description *</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Describe your campaign, what you're raising funds for, and how the money will be used"
-              rows="6"
-              required
-            />
-          </div>
+              <div className="form-group">
+                <label htmlFor="description">Description *</label>
+                <Field
+                  as="textarea"
+                  id="description"
+                  name="description"
+                  placeholder="Describe your campaign, what you're raising funds for, and how the money will be used"
+                  rows="6"
+                />
+                <ErrorMessage name="description" component="div" className="error-message" />
+              </div>
 
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? 'Creating Campaign...' : 'Create Campaign'}
-          </button>
-        </form>
+              <button type="submit" className="btn btn-primary btn-full" disabled={isSubmitting}>
+                {isSubmitting ? 'Creating Campaign...' : 'Create Campaign'}
+              </button>
+            </Form>
+          )}
+        </Formik>
       </div>
     </div>
   )

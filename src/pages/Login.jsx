@@ -1,42 +1,25 @@
-import { useState } from 'react'
+import { Formik, Form, Field, ErrorMessage } from 'formik'
+import * as Yup from 'yup'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
+const validationSchema = Yup.object({
+  name: Yup.string().required('Username is required'),
+  password: Yup.string().min(6, 'Password must be at least 6 characters').required('Password is required')
+})
+
 const Login = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    password: ''
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    if (!formData.name || !formData.password) {
-      setError('Please fill in all fields')
-      setLoading(false)
-      return
-    }
-
+  const handleSubmit = async (values, { setSubmitting, setStatus }) => {
     try {
-      await login(formData)
+      await login(values)
       navigate('/')
     } catch (err) {
-      setError('Invalid credentials')
+      setStatus('Invalid credentials')
     } finally {
-      setLoading(false)
+      setSubmitting(false)
     }
   }
 
@@ -46,39 +29,43 @@ const Login = () => {
         <h2>Welcome Back</h2>
         <p>Sign in to your FundConnect account</p>
 
-        <form onSubmit={handleSubmit} className="auth-form">
-          {error && <div className="error-message">{error}</div>}
-          
-          <div className="form-group">
-            <label htmlFor="name">Username</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter your username"
-              required
-            />
-          </div>
+        <Formik
+          initialValues={{ name: '', password: '' }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ isSubmitting, status }) => (
+            <Form className="auth-form">
+              {status && <div className="error-message">{status}</div>}
+              
+              <div className="form-group">
+                <label htmlFor="name">Username</label>
+                <Field
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Enter your username"
+                />
+                <ErrorMessage name="name" component="div" className="error-message" />
+              </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              required
-            />
-          </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <Field
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                />
+                <ErrorMessage name="password" component="div" className="error-message" />
+              </div>
 
-          <button type="submit" className="btn btn-primary btn-full" disabled={loading}>
-            {loading ? 'Signing In...' : 'Sign In'}
-          </button>
-        </form>
+              <button type="submit" className="btn btn-primary btn-full" disabled={isSubmitting}>
+                {isSubmitting ? 'Signing In...' : 'Sign In'}
+              </button>
+            </Form>
+          )}
+        </Formik>
 
         <p className="auth-switch">
           Don't have an account? <Link to="/register">Sign up</Link>
