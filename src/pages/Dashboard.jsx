@@ -10,6 +10,9 @@ const Dashboard = () => {
   const { campaigns, getUserCampaigns, deleteCampaign } = useCampaigns()
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [campaignToDelete, setCampaignToDelete] = useState(null)
+  const [showAllFeatured, setShowAllFeatured] = useState(false)
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [priceRange, setPriceRange] = useState('')
   
   const handleDeleteClick = (campaign) => {
     if (campaign.raised > 0) {
@@ -169,11 +172,53 @@ const Dashboard = () => {
           </div>
         )}
         
-        {campaigns.filter(c => parseInt(c.creatorId || 0) !== parseInt(user?.id || 0)).length > 0 && (
-          <>
-            <h2>Featured Campaigns</h2>
-            <div className="campaigns-grid">
-              {campaigns.filter(c => parseInt(c.creatorId || 0) !== parseInt(user?.id || 0)).slice(0, 3).map(campaign => (
+        {(() => {
+          const featuredCampaigns = campaigns.filter(c => parseInt(c.creatorId || 0) !== parseInt(user?.id || 0))
+          const filteredFeatured = featuredCampaigns.filter(campaign => {
+            const matchesCategory = !categoryFilter || campaign.category === categoryFilter
+            const matchesPrice = !priceRange || (
+              priceRange === 'under1000' && campaign.goal < 1000 ||
+              priceRange === '1000-5000' && campaign.goal >= 1000 && campaign.goal <= 5000 ||
+              priceRange === '5000-10000' && campaign.goal >= 5000 && campaign.goal <= 10000 ||
+              priceRange === 'over10000' && campaign.goal > 10000
+            )
+            return matchesCategory && matchesPrice
+          })
+          
+          return filteredFeatured.length > 0 && (
+            <>
+              <h2>Featured Campaigns</h2>
+              
+              <div className="search-filters">
+                <select 
+                  value={categoryFilter} 
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">All Categories</option>
+                  <option value="entrepreneurship">Entrepreneurship</option>
+                  <option value="education">Education</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="charity">Charity</option>
+                  <option value="animals">Animals</option>
+                  <option value="wars">Wars</option>
+                </select>
+                
+                <select 
+                  value={priceRange} 
+                  onChange={(e) => setPriceRange(e.target.value)}
+                  className="filter-select"
+                >
+                  <option value="">All Price Ranges</option>
+                  <option value="under1000">Under $1,000</option>
+                  <option value="1000-5000">$1,000 - $5,000</option>
+                  <option value="5000-10000">$5,000 - $10,000</option>
+                  <option value="over10000">Over $10,000</option>
+                </select>
+              </div>
+              
+              <div className="campaigns-grid">
+                {filteredFeatured.slice(0, showAllFeatured ? undefined : 4).map(campaign => (
                 <div key={campaign.id} className="campaign-card">
                   <div className="campaign-image">
                     <img src={getCategoryImage(campaign.category)} alt={campaign.category} />
@@ -218,8 +263,19 @@ const Dashboard = () => {
                 </div>
               ))}
             </div>
-          </>
-        )}
+                {filteredFeatured.length > 4 && (
+                  <div className="view-more-section">
+                    <button 
+                      onClick={() => setShowAllFeatured(!showAllFeatured)} 
+                      className="btn btn-secondary"
+                    >
+                      {showAllFeatured ? 'View Less' : `View More (${filteredFeatured.length - 4} more)`}
+                    </button>
+                  </div>
+                )}
+              </>
+            )
+        })()}
       </div>
       
       <ConfirmModal

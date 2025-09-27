@@ -193,18 +193,18 @@ const CampaignDetail = () => {
             )}
 
             {!showDonationForm ? (
-              <button 
-                onClick={() => {
-                  if (!user) {
-                    setMessage('Please log in to make a donation')
-                    return
-                  }
-                  setShowDonationForm(true)
-                }}
-                className="btn btn-primary btn-full"
-              >
-                {user ? 'Donate Now' : 'Login to Donate'}
-              </button>
+              user ? (
+                <button 
+                  onClick={() => setShowDonationForm(true)}
+                  className="btn btn-primary btn-full"
+                >
+                  Donate Now
+                </button>
+              ) : (
+                <Link to="/login" className="btn btn-primary btn-full">
+                  Login to Donate
+                </Link>
+              )
             ) : (
               <form onSubmit={handleDonate} className="donation-form">
                 <div className="form-group">

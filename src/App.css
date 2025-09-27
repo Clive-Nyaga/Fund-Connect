@@ -221,9 +221,33 @@ body {
 .campaigns-section h2 {
   font-size: 32px;
   font-weight: 600;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
   text-align: center;
   color: #333333;
+}
+
+.search-filters {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.filter-select {
+  padding: 10px 16px;
+  border: 1px solid #ffe0b2;
+  border-radius: 8px;
+  background: white;
+  color: #3e2723;
+  font-size: 14px;
+  min-width: 180px;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #ff7043;
+  box-shadow: 0 0 0 2px rgba(255, 112, 67, 0.1);
 }
 
 /*.no-campaigns {
@@ -685,7 +709,7 @@ body {
   background: #f8fafc;
   padding: 20px;
   border-radius: 8px;
-  border-left: 4px solid #5b21b6;
+  border-left: 4px solid #ff7043;
 }
 
 .creator-details h4 {
@@ -1001,11 +1025,41 @@ body {
 }
 
 .feature-card {
-  background: #fef2f2;
-  padding: 32px;
+  background: white;
+  padding: 0;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0,0,0,0.05);
   text-align: center;
+  overflow: hidden;
+}
+
+.feature-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.feature-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.feature-card > :not(.feature-image) {
+  padding: 0 32px;
+}
+
+.feature-card > h3,
+.feature-card > p {
+  padding: 0 32px;
+}
+
+.feature-card > .feature-icon {
+  margin: 20px 0;
+}
+
+.feature-card > p {
+  padding-bottom: 32px;
 }
 
 .feature-icon {
@@ -1114,15 +1168,14 @@ body {
 
 .contact-content {
   width: 100%;
-  padding: 80px 20px;
+  padding: 80px 0;
   background: #fffaf5;
 }
 
 .contact-info-centered {
-  max-width: 1000px;
-  margin: 0 auto;
+  width: 100%;
   text-align: center;
-  padding: 0 20px;
+  padding: 0;
 }
 
 .contact-info-centered h2 {
@@ -1136,9 +1189,7 @@ body {
   font-size: 18px;
   color: #6d4c41;
   margin-bottom: 60px;
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
   line-height: 1.6;
 }
 
@@ -1212,17 +1263,15 @@ body {
   font-size: 18px;
   color: #6d4c41;
   margin-bottom: 30px;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 }
 
 .contact-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 40px;
-  max-width: 800px;
-  margin: 60px auto 0;
+  width: 100%;
+  margin: 60px 0 0;
 }
 
 .contact-stat {

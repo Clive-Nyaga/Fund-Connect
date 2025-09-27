@@ -24,24 +24,36 @@ const About = () => {
 
         <div className="features-grid">
           <div className="feature-card">
+            <div className="feature-image">
+              <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?w=300&h=200&fit=crop" alt="Empower Entrepreneurs" />
+            </div>
             <Target className="feature-icon" />
             <h3>Empower Entrepreneurs</h3>
             <p>Provide a platform for entrepreneurs and changemakers to showcase their vision and raise funds for their projects.</p>
           </div>
           
           <div className="feature-card">
+            <div className="feature-image">
+              <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=300&h=200&fit=crop" alt="Promote Transparency" />
+            </div>
             <Shield className="feature-icon" />
             <h3>Promote Transparency</h3>
             <p>Allow donors to track how their contributions are being used through regular campaign updates and progress reports.</p>
           </div>
           
           <div className="feature-card">
+            <div className="feature-image">
+              <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=200&fit=crop" alt="Build Community" />
+            </div>
             <Users className="feature-icon" />
             <h3>Build Community</h3>
             <p>Create connections between supporters and creators, fostering a community of people passionate about positive change.</p>
           </div>
           
           <div className="feature-card">
+            <div className="feature-image">
+              <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=300&h=200&fit=crop" alt="Ensure Trust" />
+            </div>
             <Heart className="feature-icon" />
             <h3>Ensure Trust</h3>
             <p>Implement fraud prevention measures and campaign verification to maintain accountability and donor confidence.</p>
